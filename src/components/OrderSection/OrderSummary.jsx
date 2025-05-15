@@ -7,7 +7,6 @@ export default function OrderSummary({
     <div>
       <h2 className="text-xl font-bold mb-4">Order Summary</h2>
       <div className="grid grid-cols-3 gap-4 mb-6">
-        {/* <!-- Total Orders --> */}
         <div className="bg-cardbg rounded-lg p-4 relative overflow-hidden">
           <div className="text-5xl font-bold text-yellow-500 mb-2">
             {totalOrderCount}
@@ -17,7 +16,6 @@ export default function OrderSummary({
           </div>
         </div>
 
-        {/* <!-- Pending Orders --> */}
         <div className="bg-cardbg rounded-lg p-4 relative overflow-hidden">
           <div className="text-5xl font-bold text-red-500 mb-2">
             {pendingCount}
@@ -27,7 +25,6 @@ export default function OrderSummary({
           </div>
         </div>
 
-        {/* <!-- Delivered Orders --> */}
         <div className="bg-cardbg rounded-lg p-4 relative overflow-hidden">
           <div className="text-5xl font-bold text-green-500 mb-2">
             {deliverCount}

@@ -38,7 +38,7 @@ const itemsList = [
 ];
 const initialOrder = [
   {
-    id: 1,
+    id: 1000,
     customerName: "Sumit Saha",
     itemsOrder: 3,
     amount: 2330,
@@ -48,16 +48,16 @@ const initialOrder = [
 export default function OrderBoard() {
   const [items, setItems] = useState(itemsList);
   const [orders, setOrders] = useState(initialOrder);
+  const [allorders, setAllOrders] = useState(initialOrder);
   const [name, setName] = useState("");
   let [totalMoney, setTotalMoney] = useState(0);
   let [count, setCount] = useState(0);
   let [totalOrderCount, setTotalOrderCount] = useState(1);
   let [pendingCount, setPendingCount] = useState(1);
   let [deliverCount, setDeliverCount] = useState(0);
-  const [allOrders, setAllOrders] = useState(initialOrder);
   const handleOrder = (newOrder) => {
-    setOrders([...orders, newOrder]);
-    setAllOrders([...orders, newOrder]);
+    setOrders([newOrder, ...orders]);
+    setAllOrders([newOrder, ...orders]);
 
     setName("");
     setTotalMoney(0);
@@ -67,6 +67,10 @@ export default function OrderBoard() {
       isAdd: true,
     }));
     setItems(newArr);
+    if (orders.length === 0) {
+      setTotalOrderCount(0);
+      setPendingCount(0);
+    }
     setTotalOrderCount((value) => value + 1);
     setPendingCount((value) => value + 1);
   };
@@ -94,7 +98,7 @@ export default function OrderBoard() {
     return totalMoney;
   };
   const handleDeliver = (deliverOrder) => {
-    const updatedOrders = allOrders.map((order) => {
+    const changeOrder = allorders.map((order) => {
       if (order.id === deliverOrder.id) {
         setDeliverCount((v) => v + 1);
         setPendingCount((v) => v - 1);
@@ -102,14 +106,19 @@ export default function OrderBoard() {
       }
       return order;
     });
-    setOrders(updatedOrders);
-    setAllOrders(updatedOrders);
+    setOrders(changeOrder);
+    setAllOrders(changeOrder);
   };
   const handleDelete = (orderId) => {
     const filterOrder = orders.filter((order) => order.id != orderId);
     setOrders(filterOrder);
     setAllOrders(filterOrder);
     setTotalOrderCount((value) => value - 1);
+    if (totalOrderCount === pendingCount) {
+      setPendingCount((value) => value - 1);
+    } else {
+      setDeliverCount((value) => value - 1);
+    }
     // setPendingCount((value) => value - 1);
   };
   // const handleFilterOrder = (text) => {
@@ -125,9 +134,9 @@ export default function OrderBoard() {
   // };
   const handleFilterOrder = (text) => {
     if (text === "All") {
-      setOrders(allOrders);
+      setOrders(allorders);
     } else {
-      const filtered = allOrders.filter(
+      const filtered = allorders.filter(
         (order) => order.status.toLowerCase() === text.toLowerCase()
       );
       setOrders(filtered);

@@ -1,5 +1,11 @@
+function generateOrderId() {
+  const lastId = parseInt(localStorage.getItem("nextOrderId") || "1000", 10);
+  const newId = lastId + 1;
+  localStorage.setItem("nextOrderId", newId.toString());
+  return newId;
+}
 import { FaMinus, FaPlus } from "react-icons/fa6";
-const nextId = 1;
+
 export default function CreateOrder({
   items,
   onToggle,
@@ -19,7 +25,6 @@ export default function CreateOrder({
         their requirements.
       </p>
 
-      {/* <!-- Customer Name Input --> */}
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Customer Name</label>
         <input
@@ -27,14 +32,13 @@ export default function CreateOrder({
           onChange={onTextChange}
           type="text"
           className="w-full bg-gray-700 bg-opacity-50 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300"
+          required
         />
       </div>
 
-      {/* <!-- Choose Items --> */}
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Choose Items</label>
         <div className="items-container">
-          {/* <!-- Item 1 --> */}
           {items.map((item) => (
             <div
               key={item.id}
@@ -73,11 +77,10 @@ export default function CreateOrder({
         </div>
       </div>
 
-      {/* <!-- Place Order Button --> */}
       <button
         onClick={() => {
           onOrder({
-            id: nextId + 1,
+            id: generateOrderId(),
             customerName: name,
             itemsOrder: count,
             amount: totalMoney,

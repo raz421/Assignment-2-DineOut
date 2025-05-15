@@ -1,21 +1,16 @@
-import { useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 const nextId = 1;
-export default function CreateOrder({ items, onToggle, onOrder }) {
-  const [name, setName] = useState("");
-  let [totalMoney, setTotalMoney] = useState(0);
-  let [count, setCount] = useState(0);
-  const handlePlus = (money) => {
-    setTotalMoney((totalMoney += money));
-    setCount((count = count + 1));
-  };
-  const handleMinus = (money) => {
-    if (totalMoney > 0) {
-      setTotalMoney((totalMoney -= money));
-      setCount((count = count - 1));
-    }
-    return totalMoney;
-  };
+export default function CreateOrder({
+  items,
+  onToggle,
+  onOrder,
+  name,
+  totalMoney,
+  onTextChange,
+  onPlus,
+  onMinus,
+  count,
+}) {
   return (
     <div className="bg-cardbg rounded-lg p-6 h-[calc(100vh_-_130px)]">
       <h2 className="text-xl font-bold mb-1">CREATE ORDER</h2>
@@ -29,9 +24,7 @@ export default function CreateOrder({ items, onToggle, onOrder }) {
         <label className="block text-sm font-medium mb-2">Customer Name</label>
         <input
           value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
+          onChange={onTextChange}
           type="text"
           className="w-full bg-gray-700 bg-opacity-50 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300"
         />
@@ -61,7 +54,7 @@ export default function CreateOrder({ items, onToggle, onOrder }) {
                   <FaPlus
                     color="green"
                     onClick={() => {
-                      handlePlus(item.money);
+                      onPlus(item.money);
                       onToggle(item);
                     }}
                   />
@@ -69,7 +62,7 @@ export default function CreateOrder({ items, onToggle, onOrder }) {
                   <FaMinus
                     color="red"
                     onClick={() => {
-                      handleMinus(item.money);
+                      onMinus(item.money);
                       onToggle(item);
                     }}
                   />

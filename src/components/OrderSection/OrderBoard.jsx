@@ -110,11 +110,12 @@ export default function OrderBoard() {
     setAllOrders(changeOrder);
   };
   const handleDelete = (orderId) => {
+    const value = orders.find((order) => order.id === orderId);
     const filterOrder = orders.filter((order) => order.id != orderId);
     setOrders(filterOrder);
     setAllOrders(filterOrder);
     setTotalOrderCount((value) => value - 1);
-    if (totalOrderCount === pendingCount) {
+    if (totalOrderCount === pendingCount || value?.status === "PENDING") {
       setPendingCount((value) => value - 1);
     } else {
       setDeliverCount((value) => value - 1);

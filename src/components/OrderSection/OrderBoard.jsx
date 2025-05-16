@@ -58,7 +58,6 @@ export default function OrderBoard() {
   const handleOrder = (newOrder) => {
     setOrders([newOrder, ...orders]);
     setAllOrders([newOrder, ...orders]);
-
     setName("");
     setTotalMoney(0);
     setCount(0);
@@ -106,33 +105,24 @@ export default function OrderBoard() {
       }
       return order;
     });
-    setOrders(changeOrder);
     setAllOrders(changeOrder);
+    setOrders(changeOrder);
   };
   const handleDelete = (orderId) => {
-    const value = orders.find((order) => order.id === orderId);
-    const filterOrder = orders.filter((order) => order.id != orderId);
-    setOrders(filterOrder);
-    setAllOrders(filterOrder);
-    setTotalOrderCount((value) => value - 1);
-    if (totalOrderCount === pendingCount || value?.status === "PENDING") {
-      setPendingCount((value) => value - 1);
+    const deletedOrder = allorders.find((order) => order.id === orderId);
+    const filteredOrders = allorders.filter((order) => order.id !== orderId);
+
+    setAllOrders(filteredOrders);
+    setOrders(filteredOrders);
+
+    setTotalOrderCount((prev) => prev - 1);
+    if (deletedOrder?.status === "PENDING") {
+      setPendingCount((prev) => prev - 1);
     } else {
-      setDeliverCount((value) => value - 1);
+      setDeliverCount((prev) => prev - 1);
     }
-    // setPendingCount((value) => value - 1);
   };
-  // const handleFilterOrder = (text) => {
-  //   setOrders(
-  //     orders.filter((order) => {
-  //       if (text === "All") {
-  //         return true;
-  //       } else {
-  //         return order.status.toLowerCase().includes(text.toLowerCase());
-  //       }
-  //     })
-  //   );
-  // };
+
   const handleFilterOrder = (text) => {
     if (text === "All") {
       setOrders(allorders);

@@ -1,3 +1,4 @@
+// order summery
 export default function OrderSummary({
   totalOrderCount,
   pendingCount,

@@ -1,97 +1,171 @@
 import { useState } from "react";
-import { BsFunnel } from "react-icons/bs";
+import ChikenNuggets from "../../assets/chicken.svg";
+import HamBurger from "../../assets/hamburger.svg";
+import Pizza from "../../assets/pizza.svg";
+import Sandwich from "../../assets/submarine.svg";
+import CreateOrder from "./CreateOrder";
+import OrderReports from "./OrderReports";
+import OrderSummary from "./OrderSummary";
 
-export default function OrderReports({
-  orders,
-  onDeliver,
-  onDelete,
-  onFilter,
-}) {
-  const [text, setText] = useState("All");
+const itemsList = [
+  {
+    id: crypto.randomUUID(),
+    name: "HamBurger",
+    money: 300,
+    icon: HamBurger,
+    isAdd: true,
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Chicken Nuggets",
+    money: 250,
+    icon: ChikenNuggets,
+    isAdd: true,
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Submarine Sandwich",
+    money: 300,
+    icon: Sandwich,
+    isAdd: true,
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Pizza Slice",
+    money: 450,
+    icon: Pizza,
+    isAdd: true,
+  },
+];
+
+const initialOrder = [
+  {
+    id: 1000,
+    customerName: "Sumit Saha",
+    itemsOrder: 3,
+    amount: 2330,
+    status: "PENDING",
+  },
+];
+
+export default function OrderBoard() {
+  const [items, setItems] = useState(itemsList);
+  const [allOrders, setAllOrders] = useState(initialOrder);
+  const [orders, setOrders] = useState(initialOrder);
+  const [name, setName] = useState("");
+  const [totalMoney, setTotalMoney] = useState(0);
+  const [count, setCount] = useState(0);
+  const [totalOrderCount, setTotalOrderCount] = useState(1);
+  const [pendingCount, setPendingCount] = useState(1);
+  const [deliverCount, setDeliverCount] = useState(0);
+
+  const handleOrder = (newOrder) => {
+    const updatedOrders = [newOrder, ...allOrders];
+    setAllOrders(updatedOrders);
+    setOrders(updatedOrders);
+    setName("");
+    setTotalMoney(0);
+    setCount(0);
+    const resetItems = items.map((item) => ({
+      ...item,
+      isAdd: true,
+    }));
+    setItems(resetItems);
+    setTotalOrderCount((value) => value + 1);
+    setPendingCount((value) => value + 1);
+  };
+
+  const handleToggle = (toggleItem) => {
+    const itemIndex = items.findIndex((item) => item.id === toggleItem.id);
+    const newItems = [...items];
+    newItems[itemIndex].isAdd = !newItems[itemIndex].isAdd;
+    setItems(newItems);
+  };
+
+  const handleChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handlePlus = (money) => {
+    setTotalMoney((prev) => prev + money);
+    setCount((prev) => prev + 1);
+  };
+
+  const handleMinus = (money) => {
+    if (totalMoney > 0 && count > 0) {
+      setTotalMoney((prev) => prev - money);
+      setCount((prev) => prev - 1);
+    }
+    return totalMoney;
+  };
+
+  const handleDeliver = (deliverOrder) => {
+    const updatedOrders = allOrders.map((order) => {
+      if (order.id === deliverOrder.id) {
+        setDeliverCount((v) => v + 1);
+        setPendingCount((v) => v - 1);
+        return { ...order, status: "DELIVERED" };
+      }
+      return order;
+    });
+    setAllOrders(updatedOrders);
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === deliverOrder.id ? { ...order, status: "DELIVERED" } : order
+      )
+    );
+  };
+
+  const handleDelete = (orderId) => {
+    const deletedOrder = allOrders.find((order) => order.id === orderId);
+    const filteredAllOrders = allOrders.filter((order) => order.id !== orderId);
+    setAllOrders(filteredAllOrders);
+    setOrders(filteredAllOrders);
+    setTotalOrderCount((prev) => prev - 1);
+    if (deletedOrder?.status === "PENDING") {
+      setPendingCount((prev) => prev - 1);
+    } else {
+      setDeliverCount((prev) => prev - 1);
+    }
+  };
+
+  const handleFilterOrder = (text) => {
+    if (text === "All") {
+      setOrders(allOrders);
+    } else {
+      const filtered = allOrders.filter(
+        (order) => order.status.toLowerCase() === text.toLowerCase()
+      );
+      setOrders(filtered);
+    }
+  };
+
   return (
-    <>
-      <div>
-        <div className="flex justify-between">
-          <h2 className="text-xl font-bold mb-4">Order Reports</h2>
-
-          <div className="flex gap-4 items-center">
-            <BsFunnel />
-            <select
-              onChange={(e) => {
-                const newText = e.target.value;
-                setText(newText);
-                onFilter(newText);
-              }}
-              value={text}
-              className="appearance-none bg-zinc-900 accent-orange-600 border-none outline-none rounded-sm"
-            >
-              <option>All</option>
-              <option>Pending</option>
-              <option>Delivered</option>
-            </select>
-          </div>
-        </div>
-        <div className="bg-cardbg rounded-lg p-4">
-          <div className="reports-container">
-            <table className="min-w-full">
-              <thead>
-                <tr className="text-left text-sm">
-                  <th className="pb-3 font-medium">ID</th>
-                  <th className="pb-3 font-medium">Customer Name</th>
-                  <th className="pb-3 font-medium">Items</th>
-                  <th className="pb-3 font-medium">Amount</th>
-                  <th className="pb-3 font-medium">Status</th>
-                  <th className="pb-3 font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {/* <!-- Row 1 --> */}
-                {orders.map((order) => (
-                  <tr key={order.id} className="border-t border-gray-700">
-                    <td className="py-3">{order.id}</td>
-                    <td className="py-3">{order.customerName}</td>
-                    <td className="py-3">{order.itemsOrder}</td>
-                    <td className="py-3">{order.amount}</td>
-                    <td className="py-3">
-                      <span
-                        className={`${
-                          order.status === "PENDING"
-                            ? "text-red-500"
-                            : "text-green-500"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-3">
-                      <button
-                        onClick={() => {
-                          onDelete(order.id);
-                        }}
-                        className="bg-gray-800 hover:bg-red-600 text-xs px-3 py-1 rounded-full mr-1 transition-colors duration-300"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => {
-                          onDeliver(order);
-                        }}
-                        className={`${
-                          order.status === "DELIVERED"
-                            ? "hidden"
-                            : "bg-gray-800 hover:bg-green-600 text-xs px-3 py-1 rounded-full transition-colors duration-300"
-                        }`}
-                      >
-                        DELIVER
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 flex-grow">
+      <CreateOrder
+        onToggle={handleToggle}
+        onOrder={handleOrder}
+        items={items}
+        name={name}
+        totalMoney={totalMoney}
+        onTextChange={handleChange}
+        onPlus={handlePlus}
+        onMinus={handleMinus}
+        count={count}
+      />
+      <div className="md:col-span-2 h-[calc(100vh_-_130px)]">
+        <OrderSummary
+          totalOrderCount={totalOrderCount}
+          pendingCount={pendingCount}
+          deliverCount={deliverCount}
+        />
+        <OrderReports
+          orders={orders}
+          onDeliver={handleDeliver}
+          onDelete={handleDelete}
+          onFilter={handleFilterOrder}
+        />
       </div>
-    </>
+    </div>
   );
 }

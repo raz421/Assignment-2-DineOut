@@ -6,6 +6,7 @@ import Sandwich from "../../assets/submarine.svg";
 import CreateOrder from "./CreateOrder";
 import OrderReports from "./OrderReports";
 import OrderSummary from "./OrderSummary";
+
 const itemsList = [
   {
     id: crypto.randomUUID(),
@@ -36,6 +37,7 @@ const itemsList = [
     isAdd: true,
   },
 ];
+
 const initialOrder = [
   {
     id: 1000,
@@ -45,29 +47,29 @@ const initialOrder = [
     status: "PENDING",
   },
 ];
+
 export default function OrderBoard() {
   const [items, setItems] = useState(itemsList);
   const [orders, setOrders] = useState(initialOrder);
   const [name, setName] = useState("");
-  let [totalMoney, setTotalMoney] = useState(0);
-  let [count, setCount] = useState(0);
-  let [totalOrderCount, setTotalOrderCount] = useState(1);
-  let [pendingCount, setPendingCount] = useState(1);
-  let [deliverCount, setDeliverCount] = useState(0);
+  const [totalMoney, setTotalMoney] = useState(0);
+  const [count, setCount] = useState(0);
+  const [totalOrderCount, setTotalOrderCount] = useState(1);
+  const [pendingCount, setPendingCount] = useState(1);
+  const [deliverCount, setDeliverCount] = useState(0);
+
   const handleOrder = (newOrder) => {
     setOrders([newOrder, ...orders]);
-<<<<<<< HEAD
-    setAllOrders([newOrder, ...orders]);
-=======
->>>>>>> 7987d933fce6fe416f11b9bfb8ed98c4acad60ca
     setName("");
     setTotalMoney(0);
     setCount(0);
-    const newArr = items.map((item) => ({
+
+    const resetItems = items.map((item) => ({
       ...item,
       isAdd: true,
     }));
-    setItems(newArr);
+    setItems(resetItems);
+
     if (orders.length === 0) {
       setTotalOrderCount(0);
       setPendingCount(0);
@@ -77,20 +79,21 @@ export default function OrderBoard() {
   };
 
   const handleToggle = (toggleItem) => {
-    const itemIndex = items.findIndex((item) => {
-      return item.id === toggleItem.id;
-    });
+    const itemIndex = items.findIndex((item) => item.id === toggleItem.id);
     const newItems = [...items];
     newItems[itemIndex].isAdd = !newItems[itemIndex].isAdd;
     setItems(newItems);
   };
+
   const handleChange = (e) => {
     setName(e.target.value);
   };
+
   const handlePlus = (money) => {
     setTotalMoney((prev) => prev + money);
     setCount((prev) => prev + 1);
   };
+
   const handleMinus = (money) => {
     if (totalMoney > 0 && count > 0) {
       setTotalMoney((prev) => prev - money);
@@ -98,8 +101,9 @@ export default function OrderBoard() {
     }
     return totalMoney;
   };
+
   const handleDeliver = (deliverOrder) => {
-    const changeOrder = orders.map((order) => {
+    const updatedOrders = orders.map((order) => {
       if (order.id === deliverOrder.id) {
         setDeliverCount((v) => v + 1);
         setPendingCount((v) => v - 1);
@@ -107,31 +111,17 @@ export default function OrderBoard() {
       }
       return order;
     });
-<<<<<<< HEAD
-    setAllOrders(changeOrder);
-    setOrders(changeOrder);
+    setOrders(updatedOrders);
   };
+
   const handleDelete = (orderId) => {
-    const deletedOrder = allorders.find((order) => order.id === orderId);
-    const filteredOrders = allorders.filter((order) => order.id !== orderId);
-
-    setAllOrders(filteredOrders);
+    const deletedOrder = orders.find((order) => order.id === orderId);
+    const filteredOrders = orders.filter((order) => order.id !== orderId);
     setOrders(filteredOrders);
-
     setTotalOrderCount((prev) => prev - 1);
+
     if (deletedOrder?.status === "PENDING") {
       setPendingCount((prev) => prev - 1);
-=======
-    setOrders(changeOrder);
-  };
-  const handleDelete = (orderId) => {
-    const value = orders.find((order) => order.id === orderId);
-    const filterOrder = orders.filter((order) => order.id != orderId);
-    setOrders(filterOrder);
-    setTotalOrderCount((value) => value - 1);
-    if (totalOrderCount === pendingCount || value?.status === "PENDING") {
-      setPendingCount((value) => value - 1);
->>>>>>> 7987d933fce6fe416f11b9bfb8ed98c4acad60ca
     } else {
       setDeliverCount((prev) => prev - 1);
     }
@@ -141,14 +131,13 @@ export default function OrderBoard() {
     if (text === "All") {
       setOrders(orders);
     } else {
-      const filtered = orders
-        .filter((order) => order.status.toLowerCase() === text.toLowerCase())
-        .map((value) => {
-          return value;
-        });
+      const filtered = orders.filter(
+        (order) => order.status.toLowerCase() === text.toLowerCase()
+      );
       setOrders(filtered);
     }
   };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 flex-grow">
       <CreateOrder

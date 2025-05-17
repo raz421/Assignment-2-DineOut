@@ -48,7 +48,6 @@ const initialOrder = [
 export default function OrderBoard() {
   const [items, setItems] = useState(itemsList);
   const [orders, setOrders] = useState(initialOrder);
-  const [allorders, setAllOrders] = useState(initialOrder);
   const [name, setName] = useState("");
   let [totalMoney, setTotalMoney] = useState(0);
   let [count, setCount] = useState(0);
@@ -57,8 +56,6 @@ export default function OrderBoard() {
   let [deliverCount, setDeliverCount] = useState(0);
   const handleOrder = (newOrder) => {
     setOrders([newOrder, ...orders]);
-    setAllOrders([newOrder, ...orders]);
-
     setName("");
     setTotalMoney(0);
     setCount(0);
@@ -98,7 +95,7 @@ export default function OrderBoard() {
     return totalMoney;
   };
   const handleDeliver = (deliverOrder) => {
-    const changeOrder = allorders.map((order) => {
+    const changeOrder = orders.map((order) => {
       if (order.id === deliverOrder.id) {
         setDeliverCount((v) => v + 1);
         setPendingCount((v) => v - 1);
@@ -107,39 +104,28 @@ export default function OrderBoard() {
       return order;
     });
     setOrders(changeOrder);
-    setAllOrders(changeOrder);
   };
   const handleDelete = (orderId) => {
     const value = orders.find((order) => order.id === orderId);
     const filterOrder = orders.filter((order) => order.id != orderId);
     setOrders(filterOrder);
-    setAllOrders(filterOrder);
     setTotalOrderCount((value) => value - 1);
     if (totalOrderCount === pendingCount || value?.status === "PENDING") {
       setPendingCount((value) => value - 1);
     } else {
       setDeliverCount((value) => value - 1);
     }
-    // setPendingCount((value) => value - 1);
   };
-  // const handleFilterOrder = (text) => {
-  //   setOrders(
-  //     orders.filter((order) => {
-  //       if (text === "All") {
-  //         return true;
-  //       } else {
-  //         return order.status.toLowerCase().includes(text.toLowerCase());
-  //       }
-  //     })
-  //   );
-  // };
+
   const handleFilterOrder = (text) => {
     if (text === "All") {
-      setOrders(allorders);
+      setOrders(orders);
     } else {
-      const filtered = allorders.filter(
-        (order) => order.status.toLowerCase() === text.toLowerCase()
-      );
+      const filtered = orders
+        .filter((order) => order.status.toLowerCase() === text.toLowerCase())
+        .map((value) => {
+          return value;
+        });
       setOrders(filtered);
     }
   };
